@@ -1,2 +1,4 @@
 requests
 beautifulsoup4
+requests-doh
+dns-client
