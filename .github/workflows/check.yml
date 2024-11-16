@@ -25,5 +25,6 @@ jobs:
     - name: Run Python Script
       env:
         EITAAYAR_TOKEN: ${{ secrets.EITAAYAR_TOKEN }}
+        CHAT_ID: ${{ secrets.CHAT_ID }}
       run: |
         python main.py
