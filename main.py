@@ -3,8 +3,6 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from dns_client.adapters.requests import DNSClientSession
-
 token = os.getenv("EITAAYAR_TOKEN")
 chat_id = os.getenv("CHAT_ID")
 
@@ -23,17 +21,18 @@ def send_message(text: str) -> dict:
 
 def get_blockout_page() -> str:
     blockout_link = 'https://qepd.co.ir/fa-IR/DouranPortal/6423'
-    session = DNSClientSession('178.22.122.100')
-    return session.get(blockout_link).text
-    # return requests.get(blockout_link).text
+    return requests.get(blockout_link).text
 
 
 def main() -> None:
-    page = get_blockout_page()
-    soup = BeautifulSoup(page, 'html.parser')
-    table = soup.find('table', id='ctl01_ctl00_myDataList').get_text(separator='\n', strip=True)
+    try:
+        page = get_blockout_page()
+        soup = BeautifulSoup(page, 'html.parser')
+        message = soup.find('table', id='ctl01_ctl00_myDataList').get_text(separator='\n', strip=True)
+    except requests.exceptions.Timeout:
+        message = 'درخواست ارسال نشد!'
 
-    response = send_message(table)
+    response = send_message(message)
     if not response.get('ok'):
         if response.get('description'):
             raise Exception(response.get('description'))
