@@ -24,6 +24,6 @@ jobs:
 
     - name: Run Python Script
       env:
-        EITAAEAR_TOKEN: ${{ secrets.EITAAEAR_TOKEN }}
+        EITAAYAR_TOKEN: ${{ secrets.EITAAYAR_TOKEN }}
       run: |
         python main.py

@@ -1,6 +1,6 @@
 import os
 
-token = os.getenv("EITAAEAR_TOKEN")
+token = os.getenv("EITAAYAR_TOKEN")
 
 if token:
     print("Token received successfully!")
