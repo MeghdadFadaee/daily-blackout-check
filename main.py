@@ -1,6 +1,7 @@
 import os
 import time
 import requests
+from bs4 import BeautifulSoup
 
 token = os.getenv("EITAAYAR_TOKEN")
 chat_id = os.getenv("CHAT_ID")
@@ -11,14 +12,30 @@ if not token:
 if not chat_id:
     raise EnvironmentError("CHAT_ID is not set!")
 
+
 def send_message(text: str) -> dict:
     sent_at: int = int(time.time())
     url = f'https://eitaayar.ir/api/{token}/sendMessage?chat_id={chat_id}&text={text}&title={sent_at=}'
     return requests.get(url).json()
 
-response = send_message('test')
-if not response.get('ok'):
-    if response.get('description'):
-        raise Exception(response.get('description'))
-    else:
-        raise Exception('something sent wrong!')
+
+def get_blockout_page() -> str:
+    blockout_link = 'https://qepd.co.ir/fa-IR/DouranPortal/6423'
+    return requests.get(blockout_link).text
+
+
+def main() -> None:
+    page = get_blockout_page()
+    soup = BeautifulSoup(page, 'html.parser')
+    table = soup.find('table', id='ctl01_ctl00_myDataList').get_text(separator='\n', strip=True)
+
+    response = send_message(table)
+    if not response.get('ok'):
+        if response.get('description'):
+            raise Exception(response.get('description'))
+        else:
+            raise Exception('something sent wrong!')
+
+
+if __name__ == '__main__':
+    main()
