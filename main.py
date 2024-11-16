@@ -3,9 +3,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from requests_doh import DNSOverHTTPSSession, add_dns_provider
-
-add_dns_provider("shecan", "https://free.shecan.ir/dns-query")
+from dns_client.adapters.requests import DNSClientSession
 
 token = os.getenv("EITAAYAR_TOKEN")
 chat_id = os.getenv("CHAT_ID")
@@ -25,7 +23,7 @@ def send_message(text: str) -> dict:
 
 def get_blockout_page() -> str:
     blockout_link = 'https://qepd.co.ir/fa-IR/DouranPortal/6423'
-    session = DNSOverHTTPSSession("shecan")
+    session = DNSClientSession('178.22.122.100')
     return session.get(blockout_link).text
     # return requests.get(blockout_link).text
 
