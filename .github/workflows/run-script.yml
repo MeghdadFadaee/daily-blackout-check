@@ -1,6 +1,9 @@
-name: Run Python Script Every Hour
+name: Run Script
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     - cron: "0 * * * *"
 
