@@ -7,7 +7,7 @@ token = os.getenv("EITAAYAR_TOKEN")
 chat_id = os.getenv("CHAT_ID")
 
 if not token:
-    raise EnvironmentError("MY_SECRET_TOKEN is not set!")
+    raise EnvironmentError("EITAAYAR_TOKEN is not set!")
 
 if not chat_id:
     raise EnvironmentError("CHAT_ID is not set!")
@@ -21,15 +21,26 @@ def send_message(text: str) -> dict:
 
 def get_blockout_page() -> str:
     blockout_link = 'https://qepd.co.ir/fa-IR/DouranPortal/6423'
-    blockout_link = 'http://meghdadbot.freehost.io/blockout'
+    blockout_link = 'https://re.rodad.net/blockout/'
     return requests.get(blockout_link).text
+
+
+def make_message(html: str) -> str:
+    if len(html) == 0:
+        return "خطا در خواندن صفحه!"
+
+    soup = BeautifulSoup(html, 'html.parser')
+    table = soup.find('table', id='ctl01_ctl00_myDataList')
+    paragraphs = table.find_all('p')
+    blok = table.find('p', string=lambda text: isinstance(text, str) and 'B2' in text)
+    time_index = paragraphs.index(blok) - 1
+    return paragraphs[time_index].get_text(separator='\n', strip=True)
 
 
 def main() -> None:
     try:
         page = get_blockout_page()
-        soup = BeautifulSoup(page, 'html.parser')
-        message = soup.find('table', id='ctl01_ctl00_myDataList').get_text(separator='\n', strip=True)
+        message = make_message(page)
     except requests.exceptions.Timeout:
         message = 'درخواست ارسال نشد!'
 
