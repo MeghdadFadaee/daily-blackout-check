@@ -21,7 +21,7 @@ def send_message(text: str) -> dict:
 
 def get_blockout_page() -> str:
     blockout_link = 'https://qepd.co.ir/fa-IR/DouranPortal/6423'
-    blockout_link = 'https://re.rodad.net/blockout/'
+    blockout_link = 'https://re.rodad.net/blockout'
     return requests.get(blockout_link).text
 
 
@@ -30,10 +30,14 @@ def make_message(html: str) -> str:
         return "خطا در خواندن صفحه!"
 
     soup = BeautifulSoup(html, 'html.parser')
-    table = soup.find('table', id='ctl01_ctl00_myDataList')
-    paragraphs = table.find_all('p')
-    blok = table.find('p', string=lambda text: isinstance(text, str) and 'B2' in text)
-    time_index = paragraphs.index(blok) - 1
+    # table = soup.find('table', id='ctl01_ctl00_myDataList')
+
+    paragraphs = soup.find_all('p')
+    block = soup.find('p', string=lambda text: isinstance(text, str) and 'بلوك B2' in text)
+    if not block:
+        return "اطلاعات بلوك B2 یافت نشد!"
+
+    time_index = paragraphs.index(block) - 1
     return paragraphs[time_index].get_text(separator='\n', strip=True)
 
 
