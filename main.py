@@ -21,6 +21,7 @@ def send_message(text: str) -> dict:
 
 def get_blockout_page() -> str:
     blockout_link = 'https://qepd.co.ir/fa-IR/DouranPortal/6423'
+    blockout_link = 'http://meghdadbot.freehost.io/blockout'
     return requests.get(blockout_link).text
 
 
