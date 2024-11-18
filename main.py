@@ -32,7 +32,7 @@ def make_message(html: str) -> str:
     soup = BeautifulSoup(html, 'html.parser')
     # table = soup.find('table', id='ctl01_ctl00_myDataList')
 
-    block_needle = 'بلوک A2'
+    block_needle = 'بلوک A4'
     try:
         paragraphs = soup.find_all('p')
         block = soup.find('p', string=lambda text: isinstance(text, str) and block_needle in text)
