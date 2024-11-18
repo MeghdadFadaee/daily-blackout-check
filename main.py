@@ -32,14 +32,14 @@ def make_message(html: str) -> str:
     soup = BeautifulSoup(html, 'html.parser')
     # table = soup.find('table', id='ctl01_ctl00_myDataList')
 
-    block_needle = 'بلوك A2'
-    paragraphs = soup.find_all('p')
-    block = soup.find('p', string=lambda text: isinstance(text, str) and block_needle in text)
-    if not block:
+    block_needle = 'بلوک A2'
+    try:
+        paragraphs = soup.find_all('p')
+        block = soup.find('p', string=lambda text: isinstance(text, str) and block_needle in text)
+        time_index = paragraphs.index(block) - 1
+        return paragraphs[time_index].get_text(separator='\n', strip=True)
+    except:
         return f"اطلاعات {block_needle} یافت نشد!"
-
-    time_index = paragraphs.index(block) - 1
-    return paragraphs[time_index].get_text(separator='\n', strip=True)
 
 
 def main() -> None:
