@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import requests
 from bs4 import BeautifulSoup
@@ -25,7 +26,30 @@ def get_blockout_page() -> str:
     return requests.get(blockout_link).text
 
 
-def make_message(html: str) -> str:
+def convert_to_english_numbers(text):
+    persian_to_english = str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")
+    return text.translate(persian_to_english)
+
+
+def find_times(text: str) -> list[str]:
+	text = convert_to_english_numbers(text)
+	pattern = r"(\d{1,2}:\d{2}|\d{1,2})"
+	return re.findall(pattern, text)
+
+def is_time_past(time_str: str) -> bool:
+    try:
+        current_time = datetime.now(iran_tz).time()
+        
+        if ":" in time_str:
+          time_obj = datetime.strptime(time_str.strip(), "%H:%M").time()
+        else:
+        	time_obj = datetime.strptime(time_str.strip(), "%H").time()
+        
+        return time_obj < current_time
+    except Exception:
+        return false
+
+def make_message(html: str) -> str|None:
     if len(html) == 0:
         return "خطا در خواندن صفحه!"
 
@@ -37,7 +61,13 @@ def make_message(html: str) -> str:
         paragraphs = soup.find_all('p')
         block = soup.find('p', string=lambda text: isinstance(text, str) and block_needle in text)
         time_index = paragraphs.index(block) - 1
-        return paragraphs[time_index].get_text(separator='\n', strip=True)
+        text = paragraphs[time_index].get_text(separator='\n', strip=True)
+        start, end, *_ = find_times(text)
+        
+        if is_time_past(start):
+          return None
+          
+        return text
     except:
         return f"اطلاعات {block_needle} یافت نشد!"
 
@@ -48,7 +78,10 @@ def main() -> None:
         message = make_message(page)
     except requests.exceptions.Timeout:
         message = 'درخواست ارسال نشد!'
-
+    
+    if not message: 
+      return None
+    
     response = send_message(message)
     if not response.get('ok'):
         if response.get('description'):
