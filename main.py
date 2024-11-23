@@ -50,6 +50,7 @@ def is_time_past(time_str: str) -> bool:
         return false
 
 def make_message(html: str) -> str|None:
+    return None
     if len(html) == 0:
         return "خطا در خواندن صفحه!"
 
